@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>声明式渲染</title>
+	<link rel="stylesheet" type="text/css" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h3>声明式渲染</h3>
+		<div id="dad">
+			{{url}}
+		</div>
+		<div id="app-2" >
+			<a v-bind:title='time'>
+				绑定元素的另一种方法
+			</a>
+		</div>
+		<h3>条件与循环</h3>
+		<div id="app-3">
+			<p v-if="ifSee">Can you see me ?</p>
+		</div>
+		<h4>循环-我所学的课程</h4>
+		<div id="app-4">
+			<ul class="list-group">
+			  <li class="list-group-item" v-for="book in books">
+			  	{{book.text}}
+			  </li>
+			</ul>
+		</div>
+		<h3>处理用户输入</h3>
+		<div id="app-5">
+			<p>{{text}}</p>
+			<button class="btn btn-info" v-on:click = 'reverse()'>reverseMessage</button>
+		</div>
+		<h3>双向数据绑定</h3>
+		<div id="app-6">
+			<p>my name is {{text}}</p>
+			<input type="text" class="" v-model='text'>
+		</div>
+		<h3>用组件构建(应用)</h3>
+		<div id="app-7">
+			<ul class="list-group">
+				<todo-item v-for =" city in citys" v-bind:todo='city'></todo-item>
+			</ul>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var app = new Vue({
+			el : '#dad',
+			data : {
+				message : '我也不知道说点什么呢',
+				url : 'www.baidu.com'
+			}
+		})
+		var app2 = new Vue({
+			el : '#app-2',
+			data : {
+				time : '打开页面的时间是 : ' + new Date()
+			}
+		})
+		var app3 = new Vue({
+			el : "#app-3",
+			data : {
+				ifSee : true
+			}
+		})
+		var app4 = new Vue({
+			el : '#app-4',
+			data : {
+				books : [
+					{text : 'javascript'},
+					{text : 'html'},
+					{text : 'css'},
+					{text : 'angular'},
+					{text : 'vue'}
+				]
+			}
+		})
+		var app5 = new Vue({
+			el : '#app-5',
+			data : {
+				text : 'Hello Vue.js!'
+			},
+			methods : {
+				reverse : function (){
+					this.text = this.text.split(" ").reverse().join(" ");
+				}
+			}
+		})
+		var app6 = new Vue({
+			el : "#app-6",
+			data : {
+				text : 'xiaocheng'
+			}
+		})
+		Vue.component("todo-item",{
+			props : ['todo'],
+			template : "<li class='list-group-item'>{{todo.city}}</li>"
+		})
+		var app7 = new Vue({
+			el : '#app-7',
+			data : {
+				citys : [
+					{city : "北京"},
+					{city : "上海"},
+					{city : "深圳"},
+					{city : '广州'} 
+				]
+			}
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>组件</title>
+	<link rel="stylesheet" type="text/css" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script type="text/javascript" src="vue.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h1>组件 component</h1>
+		<div id ="app1">
+			<p>初始化一个最简单的组件</p>
+			<!-- <my-component></my-component> 或者-->
+			<div is="my-component"></div>
+		</div>
+		<h2>data 必须是函数</h2>
+		<div id="app2">
+			<my-cx></my-cx>
+			<my-cx></my-cx>
+			<my-cx></my-cx>
+		</div>
+		<h2>props 传递数据</h2>
+		<div id="app3">
+			<child my-message="太帅了！"></child>
+		</div>
+		<h2>props 动态</h2>
+		<div id="app4">
+			<input v-model="text" type="text" />
+			<props-ele :my-message="text"></props-ele>
+		</div>
+		<hr>
+		<h2>使用 $on(eventName) 监听事件</h2>
+		<h2>使用 $emit(eventName) 触发事件</h2>
+		<div id="on-emit">
+			<h2>{{total}}</h2>
+			<com-button v-on:fun='cotaladd'></com-button>
+			<com-button v-on:fun='cotaladd'></com-button>
+		</div>
+		<hr>
+		<h2>一个简单的货币输入</h2>
+		<div id="writePrice">
+			<div-price></div-price>
+		</div>
+		<hr>
+		<h2>编译作用域</h2>
+		<div id="divspoce">
+			<div-spoce></div-spoce>
+		</div>
+		<hr>
+		<h2>具名Slot</h2>
+		<div id="slot">
+			<div-slot>
+				<p>我是内容</p>
+				<h3 slot='header'>我是标题</h3>
+				<p>我是内容</p>
+				<p>我是内容</p>
+				<h3 slot='footer'>我是页脚</h3>
+			</div-slot>
+		</div>
+		<hr>
+		<h2>作用域插槽</h2>
+		<div id="parent">
+			<child>
+				<template scope='props'>
+					<span>hello from parent</span>
+					<span>{{props.text}}</span>
+				</template>
+			</child>
+		</div>
+		<hr>
+		<h2>作用域插槽2</h2>
+		<div id="parent2">
+			<my-awesome-list :items="items">
+				<template slot='item' scope='props'>
+					<li class="list-group-item">{{props.text}}</li>
+				</template>
+			</my-awesome-list>
+		</div>
+		<h2>动态组件</h2>
+		<div id="component">
+			<component :is="currentView"></component>
+		</div>
+		<hr>
+		<h2>异步组件</h2>
+		<div id="async">
+			<div-async></div-async>
+		</div>
+	</div>
+	<script type="text/javascript">
+		// 异步组件
+		Vue.component("div-async",function(resolve,reject){
+			setTimeout(function(){
+				resolve({
+					template : '<div><h2>我是异步组件</h2></div>'
+				})
+			}, 2000)
+		})	
+		var async = new Vue({
+			el : "#async"
+		})
+		// 动态组件
+		var component = new Vue({
+			el : '#component',
+			data : {
+				currentView : 'Home'
+			},
+			components : {
+				Home : {
+					template : '<div>我是首页</div>'
+				},
+				List : {
+					template : '<div>我是列表页</div>'
+				},
+				Art : {
+					template : '<div>我是文章内容也</div>'
+				}
+			}
+		})
+		// // 作用域插槽2
+		Vue.component('my-awesome-list',{
+			template : '<ul class="list-group"><slot name="item" v-for="item in items" :text="item.text"><!-- fallback content here --></slot></ul>',
+			props : ['items']
+		})
+		var parent2 = new Vue({
+			el : '#parent2',
+			data : {
+				items :[{text:'肖成'},{text:'赵强'},{text:'李世雄'}]
+			}
+		})
+		// 作用域插槽
+		Vue.component('child',{
+			template : '<div class="child"><slot text="hello from child"></slot></div>'
+		})
+		var parent = new Vue({
+			el : '#parent',
+		})
+		// 具名slot
+		Vue.component("div-slot",{
+			// template : "<header><slot name='header'></slot></header><main><slot></slot></main><footer><slot name= 'footer'></slot></footer>"
+			template : '<div class="container"><header><slot name="header"></slot></header><main><slot></slot></main><footer><slot name="footer"></slot></footer></div>'
+		})
+		var slot = new Vue({
+			el : '#slot'
+		})
+		// 编译作用域
+		Vue.component("div-spoce",{
+			template : '<h2 v-show="isShow">我来测试一下作用域</h2>',
+			data : function (){
+				return {
+					isShow : true
+				}
+			}
+		})
+		var divspoce = new Vue({
+			el : "#divspoce",
+			data : {
+				isShow : false
+			}
+		})
+		// 一个简单的货币输入
+		Vue.component("div-price",{
+			template : '<span>$<input ref="input" v-bind:value="value" v-on:input="updataValue($event.target.value)"/></span>',
+			props: ["value"],
+			methods : {
+				updataValue : function (value){
+					var formattedValue = value.trim().slice(0,value.indexOf('.')+3);
+					if (formattedValue !== value) {
+						this.$refs.input.value = formattedValue;
+					}
+					// this.$emit("input",Number(formattedValue));
+				}
+			}
+		})
+		var writePrice = new Vue({
+			el : '#writePrice',
+		})
+		// 使用 $on(eventName) 监听事件
+		// 使用 $emit(eventName) 触发事件
+		Vue.component("com-button",{
+			template : '<button class="btn btn-promary" v-on:click="countAdd">{{count}}</button>',
+			data : function(){
+				return {
+					count : 0
+				}
+			},
+			methods : {
+				countAdd : function (){
+					this.count ++ ;
+					this.$emit('fun');
+				}
+			}
+		})
+		var onemit = new Vue({
+			el : '#on-emit',
+			data : {
+				total : 0
+			},
+			methods : {
+				cotaladd : function (){
+					this.total +=1 ;
+				}
+			}
+		})
+		// props 动态数据
+		Vue.component("props-ele",{
+			template : "<p>输入的信息是 : {{myMessage}} </p>",
+			props : ["myMessage"]
+		})
+		var app4 = new Vue({
+			el : "#app4",
+			data : {
+				text :""
+			}
+		})
+		// props 传递数据
+		Vue.component("child",{
+			template : '<p>信息是 : {{myMessage}}</p>',
+			props : ["myMessage"]
+		})
+		var app3 = new Vue({
+			el : '#app3'
+		})
+		// data 必须是函数
+		data = { count : 0};
+		Vue.component("my-cx",{
+			template : '<button v-on:click="count += 1">{{count}}</button>',
+			data : function(){ //必须是函数
+				return data 
+			}
+		})
+		var app2 = new Vue({
+			el : "#app2"
+		})
+		// 初始化一个最简单的组件
+		Vue.component("my-component",{
+			template : '<h2>我是初始化的第一个组件</h2>'
+		})
+		var app1 = new Vue({
+			el : '#app1'
+		});
+	</script>
+</body>
+</html>

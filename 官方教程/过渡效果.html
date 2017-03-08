@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>过渡效果</title>
+	<link rel="stylesheet" type="text/css" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script type="text/javascript" src="vue.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js"></script>
+	<style type="text/css">
+		.fade-enter-active, .fade-leave-active {
+		  transition: opacity .5s
+		}
+		.fade-enter, .fade-leave-active {
+		  opacity: 0;
+		}
+		.transitionX-enter-active{
+			transition : all 0.3s ease;
+		}
+		.transitionX-leave-active{
+			transition : all 0.8s ease;
+		}
+		.transitionX-enter,
+		.transitionX-leave-active{
+			transform : translateX(10px);
+			opacity:  0;
+		}
+		.css3-enter-active{
+			animation : in 0.8s;
+		}
+		.css3-leave-active{
+			animation : out 0.8s;
+		}
+		@keyframes in{
+			0%{
+				transform : translateX(0px);
+			}
+			33%{
+				transform : translateX(-200px);
+			}
+			66%{
+				transform : translateX(1200px);
+			}
+			100%{
+				transform : translateX(0px);
+			}
+		}
+		@keyframes out{
+			0%{
+				transform : translateX(0px);
+			}
+			33%{
+				transform : translateX(1200px);
+			}
+			66%{
+				transform : translateX(-200px);
+			}
+			100%{
+				transform : translateX(0px);
+			}
+		}
+		.model-enter-active,
+		.model-leave-active{
+			transition : all 0.5s ease;
+		}
+		.model-enter,
+		.model-leave-active{
+			opacity: 0;
+		}
+		.list-item{
+			font-size: 2em;
+			line-height: 2em;
+			color: #000;
+			margin-right: 10px;
+			display: block; 
+			float: left;
+		}
+		.list-enter-active,
+		.list-leave-active{
+			transition : all 1s ease;
+		}
+		.list-enter,
+		.list-leave-active{
+			transform : translateY(30px);
+			opacity:  0;
+		}
+		.list1-move,
+		.list-item,
+		.listgroup-move{
+			transition : all 0.8s ease;
+		}
+		#table{
+			padding:  0px;
+			margin:  0px;
+		}
+		#table ul {
+			width: 391px;
+			padding: 20px;
+			margin: 0px;
+			list-style: none;
+			overflow: hidden;
+		}
+		#table ul li{
+			width: 40px;
+			font-size: 20px;
+			height: 40px;
+			border:  1px solid #ccc;
+			line-height: 40px;
+			text-align: center;
+			float: left;
+			margin-right: -1px;
+			margin-bottom: -1px;
+			display: block;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>过渡效果</h1>
+		<div id="opactiy">
+			<button class="btn btn-default" v-on:click='show = !show'>
+				toggle
+			</button>
+			<transition name = "fade">
+				<h3 v-show='show'>我是可以隐藏和显示的哦</h3>
+			</transition>
+		</div>
+		<div id="transition">
+			<button class="btn btn-info" v-on:click = 'show = !show'>
+				Toggle
+			</button>
+			<transition name = 'transitionX'>
+				<h3 v-if="show">{{message}}</h3>
+			</transition>
+		</div>
+		<hr>
+		<h2>CSS动画</h2>
+		<div id="css3">
+			<button class="btn btn-primary" @click="show = !show">
+				Toggle
+			</button>
+			<transition name = 'css3'>
+				<h3 v-if='show'>{{message}}</h3>
+			</transition>
+		</div>
+		<hr>
+		<h2>多组件的过渡</h2>
+		<div id="modeltrans">
+			<label><input type="radio" v-model="view" value="v-a">A</label>
+			<label><input type="radio" v-model="view" value="v-b">B</label>
+			<transition name="model" mode="out-in">
+				<component v-bind:is="view"></component>
+			</transition>
+		</div>
+		<hr>
+		<h2>列表的进入和离开的过渡</h2>
+		<div id="list">
+			<button class="btn btn-info" v-on:click = "Add">Add</button>
+			<button class="btn btn-info" v-on:click = "Remove">Remove</button>
+			<button class="btn btn-info" v-on:click = "shuffle">Shuffle</button>
+			<transition-group name="list" tag='p'>
+				<span v-for="item in items" :key="item" class="list-item">{{item}}</span>
+			</transition-group>
+		</div>
+		<hr style="clear:both">
+		<h2>列表位移过渡</h2>
+		<div id="list1">
+			<button class="btn btn-default" v-on:click="shuffle()">shuffle</button>
+			<transition-group tag="ul" class="list-group" name='list1'>
+				<li v-for="item in items" :key="item" class="list-group-item">{{item}}</li>
+			</transition-group>
+		</div>
+		<hr>
+		<h2>动画表格</h2>
+		<div id="table">
+			<button class="btn btn-info" v-on:click="shuffle">Shuffle</button>
+			<transition-group tag='ul' name="listgroup">
+				<li v-for="item in items" v-bind:key="item">{{item}}</li>
+			</transition-group>
+		</div>
+	</div>
+	<script type="text/javascript">
+	function reNum(arr){
+		for(var i= 0,l = arr.length;i<l;i++){  
+        			var n = parseInt(Math.random()*l);  
+       				arr[i] = [arr[n],arr[n] = arr[i]][0];//执行随机位置调换  
+       				// this[i] = this[n];
+    		}
+    	return arr;
+	}
+		var table = new Vue({
+			el : '#table',
+			data :{
+				items :[
+				1,2,3,4,5,6,7,8,9,
+				11,12,13,14,15,16,17,18,19,
+				21,22,23,24,25,26,27,28,29,
+				31,32,33,34,35,36,37,38,39,
+				41,42,43,44,45,46,47,48,49,
+				51,52,53,54,55,56,57,58,59,
+				61,62,63,64,65,66,67,68,69,
+				71,72,73,74,75,76,77,78,79,
+				81,82,83,84,85,86,87,88,89,
+				]
+			},
+			methods : {
+				shuffle : function(){
+					this.items = _.shuffle(this.items)
+					// this.items = reNum(this.items);
+				}
+			}
+		})
+	    var list = new Vue({
+	    	el : "#list1",
+	    	data : {
+	    		items : [1,2,3,4,5,6,7,8,9]
+	    	},
+	    	methods : {
+	    		shuffle :function(){
+	    			this.items = _.shuffle(this.items);
+	    		}
+	    	}
+	    })
+		var list = new Vue({
+			el : '#list',
+			data : {
+				items : [1,2,3,4,5,6,7,8,9],
+				nextNum : 10
+			},
+			methods : {
+				randomIndex : function (){
+					return Math.floor(Math.random()*this.items.length);
+				},
+				Remove : function(){
+					this.items.splice(this.randomIndex(),1);
+				},
+				Add : function (){
+					this.items.splice(this.randomIndex(),0,this.nextNum++);
+				},
+				shuffle : function(){
+					this.items = _.shuffle(this.items);
+				}
+			}
+		})
+		var modeltrans = new Vue({
+			el : '#modeltrans',
+			data : {
+				view : 'v-a'
+			},
+			components : {
+				'v-a':{
+					template : "<h2>Component A</h2>",
+				},
+				'v-b':{
+					template : "<h2>Component B</h2>",
+				}
+			}
+		})
+		var css = new Vue({
+			el : '#css3',
+			data : {
+				show : true,
+				message : 'Look at me'
+			}
+		})
+		var transitionX = new Vue({
+			el : '#transition',
+			data : {
+				show : true,
+				message : 'Hello vue.js'
+			}
+		})
+		var opactiy = new Vue({
+			el : '#opactiy',
+			data : {
+				show : true
+			}
+		})
+	</script>
+</body>
+</html>

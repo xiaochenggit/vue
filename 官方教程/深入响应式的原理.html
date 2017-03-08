@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>深入响应式的原理</title>
+	<link rel="stylesheet" type="text/css" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script type="text/javascript" src="vue.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h1>深入响应式的原理</h1>
+		<hr>
+		<h2>异步更新队列</h2>
+		<div id="example">
+			<h3>{{message}}</h3>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var example = new Vue({
+			el : '#example',
+			data : {
+				message : '今天二月初二龙抬头！'
+			}
+		})
+		var str = "今天是个普通的日子";
+		example.message = str;
+		console.log(example.$el.textContent === str) // false
+		Vue.nextTick(function () {
+		  console.log(example.$el.textContent === str) // true
+		})
+	</script>
+</body>
+</html>

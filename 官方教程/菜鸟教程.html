@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>菜鸟教程</title>
+	<link rel="stylesheet" type="text/css" href="http://libs.baidu.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+<body>
+	<div class="container">
+		<h2>双休数据绑定</h2>
+		<div id="vmodel">
+			<input type="text" v-model="message" />
+			<h3>我正在学习的是 : {{message}}</h3>
+			<button class=" btn btn-default" @click="reverse">Reverse</button>
+		</div>
+		<hr>
+		<h2>遍历数据</h2>
+		<div id="vfor">
+			<h4>我喜欢的城市</h4>
+			<ul class="list-group">
+				<li class="list-group-item" v-for = '(city,index) in loveCitys'>{{message}}{{ index+1 }}{{city}}</li>
+			</ul>
+			<input type="text" v-model='city'>
+			<button v-on:click = "add">添加</button><button v-on:click="remove">删除</button>
+		</div>
+		<hr>
+		<h2>条件判断</h2>
+		<div id="vif">
+			<p v-if="isIf">{{isIf}}</p>
+			<p v-else="isIf">{{isIf}}</p>
+			<button class="btn btn-info" @click="isIf = !isIf">Reverse</button>
+		</div>
+		<hr>
+		<h2>过滤器</h2>
+		<div id="filter">
+			<h3>{{message | upper}}</h3>
+			<h3>{{message1 | reverse}}</h3>
+		</div>
+		<hr>
+		<h2>watch 监听器</h2>
+		<div id="watch">
+			<input type="text" v-model="firstName">
+			<input type="text" v-model="lastName">
+			<h3>全名 : {{fullName}}</h3>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var watch = new Vue({
+			el : '#watch',
+			data : {
+				firstName : '肖',
+				lastName : '成',
+				fullName : '肖成'
+			},
+			watch : {
+				firstName : function (val){
+					this.fullName = val + this.lastName;
+				},
+				lastName : function(val){
+					this.fullName = this.firstName + val;
+				}
+			}
+		})
+		Vue.filter("upper",function(value){
+			return value.toUpperCase();
+		})
+		Vue.filter("reverse",function(value){
+			return value.split("").reverse().join("");
+		})
+		var fil = new Vue({
+			el : '#filter',
+			data : {
+				message : 'abcdadada',
+				message1 : 'ABC'
+			}
+		})
+		
+		var vif = new Vue({
+			el : '#vif',
+			data : {
+				isIf : true
+			}
+		})
+		var vfor = new Vue({
+			el : '#vfor',
+			data : {
+				message : '我喜欢的城市',
+				loveCitys : ["上海","北京","天津","广州"],
+				city : ''
+			},
+			methods : {
+				add : function(){
+					if (this.city!='') {
+						var index = Math.floor(Math.random()*this.loveCitys.length);
+						this.loveCitys.splice(index,0,this.city);
+					}
+				},
+				remove : function(){
+					var index = Math.floor(Math.random()*this.loveCitys.length);
+					this.loveCitys.splice(index,1);
+				}
+			}
+		})
+		var vmodel = new Vue({
+			el : "#vmodel",
+			data : {
+				message : '我要学习nodejs'
+			},
+			methods : {
+				reverse : function(){
+					this.message = this.message.split("").reverse().join("");
+				}
+			}
+		})
+	</script>
+</body>
+</html>

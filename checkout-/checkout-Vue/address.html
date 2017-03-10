@@ -36,7 +36,8 @@
         </defs>
     </svg>
 
-    <div class="container">
+    <div class="container" id="address">
+        <h1 v-text="title"></h1>
         <div class="checkout-addr">
             <!-- process step -->
             <div class="check-step">
@@ -55,11 +56,11 @@
             <div class="addr-list-wrap">
                 <div class="addr-list">
                     <ul>
-                        <li>
+                        <li v-for="(item,index) in filterAddressList" :class="{'check':curIndex == index}" @click = "curIndex = index">
                             <dl>
-                                <dt>Alex</dt>
-                                <dd class="address">北京市海淀去中关村</dd>
-                                <dd class="tel">10010</dd>
+                                <dt>{{item.userName}}</dt>
+                                <dd class="address">{{item.streetName}}</dd>
+                                <dd class="tel">{{item.postCode}}</dd>
                             </dl>
                             <div class="addr-opration addr-edit">
                                 <a href="javascript:;" class="addr-edit-btn">
@@ -67,14 +68,14 @@
                                 </a>
                             </div>
                             <div class="addr-opration addr-del">
-                                <a href="javascript:;" class="addr-del-btn">
+                                <a href="javascript:;" class="addr-del-btn" @click="deleteAddress(index)">
                                     <svg class="icon icon-del"><use xlink:href="#icon-del"></use></svg>
                                 </a>
                             </div>
-                            <div class="addr-opration addr-set-default">
-                                <a href="javascript:;" class="addr-set-default-btn"><i>设为默认</i></a>
+                            <div class="addr-opration addr-set-default" >
+                                <a href="javascript:;" class="addr-set-default-btn" v-show="!item.isDefault" @click="setDefalutAddress(item.addressId)"><i>设为默认</i></a>
                             </div>
-                            <div class="addr-opration addr-default">默认地址</div>
+                            <div class="addr-opration addr-default" v-if="item.isDefault">默认地址</div>
                         </li>
 
                         <li class="addr-new">
@@ -88,9 +89,16 @@
                     </ul>
                 </div>
 
-                <div class="shipping-addr-more">
-                    <a class="addr-more-btn up-down-btn" href="javascript:;">
+                <div class="shipping-addr-more" v-if="addressList.length>=3">
+                    <a class="addr-more-btn up-down-btn" href="javascript:;" @click="addressNum=addressList.length" v-if="addressNum<=3">
                         more
+                        <i class="i-up-down">
+                            <i class="i-up-down-l"></i>
+                            <i class="i-up-down-r"></i>
+                        </i>
+                    </a>
+                    <a class="addr-more-btn up-down-btn" href="javascript:;" @click="addressNum=3" v-else>
+                        cut
                         <i class="i-up-down">
                             <i class="i-up-down-l"></i>
                             <i class="i-up-down-r"></i>
@@ -106,11 +114,11 @@
             <div class="shipping-method-wrap">
                 <div class="shipping-method">
                     <ul>
-                        <li class="check">
+                        <li :class="{'check':tabIndex == 1}" @click="tabIndex=1">
                             <div class="name">标准配送</div>
                             <div class="price">Free</div>
                         </li>
-                        <li>
+                        <li :class="{'check':tabIndex == 2}" @click="tabIndex=2">
                             <div class="name">高级配送</div>
                             <div class="price">180</div>
                         </li>
@@ -123,5 +131,8 @@
             </div>
         </div>
     </div>
+    <script type="text/javascript" src="./js/lib/vue.min.js"></script>
+    <script type="text/javascript" src="./js/lib/vue-resource.min.js"></script>
+    <script type="text/javascript" src="./js/lib/address.js"></script>
 </body>
 </html>

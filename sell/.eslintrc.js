@@ -31,6 +31,7 @@ module.exports = {
     "no-mixed-spaces-and-tabs": [0, false],
     "no-irregular-whitespace": 0,
     "no-mixed-spaces-and-tabs": [0, false],
-    "no-tabs":'off'
+    "no-tabs":'off',
+    "space-infix-ops": ["error", {"int32Hint":true}]
   }
 }

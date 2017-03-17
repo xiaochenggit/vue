@@ -18,10 +18,10 @@ const CLS_OFF = 'off';
 			}
 		},
 		computed: {
-			starType () {
+			starType() {
 				return 'star-' + this.size;
 			},
-			itemClasses () {
+			itemClasses() {
 				let result = [];
 				let score = Math.floor(this.score * 2) / 2;
 				let hasDecimal = score % 1 !== 0;
@@ -75,8 +75,8 @@ const CLS_OFF = 'off';
 				bg-image('star36_half')
 			&.off
 				bg-image('star36_off')
-	&.star-24
-		.star-item
+    &.star-24
+    	.star-item
 			width:10px
 			height:10px
 			margin-right:3px
@@ -87,4 +87,5 @@ const CLS_OFF = 'off';
 				bg-image('star24_half')
 			&.off
 				bg-image('star24_off')
+	
 </style>

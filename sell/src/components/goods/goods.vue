@@ -2,7 +2,7 @@
 <div class="goods">
  <div class="menu-warpper" ref="menuWrapper">
   <ul>
-    <li v-for="(item,index) in goods" class="menu-item" :class="{'curr':curindex==index}">
+    <li v-for="(item,index) in goods" class="menu-item" :class="{'curr':curindex==index}" @click="selectMenu(index)">
       <span class="text">
       	<span class="icon" v-if="item.type>0" :class='classMap[item.type]'></span>{{item.name}}
       </span>
@@ -35,10 +35,13 @@
    	 </li>
    </ul>
  </div>
+ <!-- 把陪送费,起送费传递 -->
+ <v-shopcart :deliveryPrice='seller.deliveryPrice' :minPrice='seller.minPrice'></v-shopcart>
 </div>
 </template>
 
 <script type="text/ecmascript-6">
+import shopcart from '../../components/shopcart/shopcart.vue';
 import BScroll from 'better-scroll';
 export default {
 	data () {
@@ -67,7 +70,9 @@ export default {
 	methods: {
 		_initScroll () {
 			// better scroll 插件
-			this.menuScroll = new BScroll(this.$refs.menuWrapper, {});
+			this.menuScroll = new BScroll(this.$refs.menuWrapper, {
+				click: true
+			});
 			this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
 			   // 添加监听位置参数
 			   probeType: 3
@@ -87,7 +92,12 @@ export default {
 			     height += listItem[i].clientHeight;
 			     this.listHeight.push(height);
 			}
-		}
+		},
+		// 左侧菜单@click= 'function' 参数位置index
+		 selectMenu: function (index) {
+		 	var listItem = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
+		 	this.foodsScroll.scrollToElement(listItem[index], 300);
+		 }
 	},
 	computed: {
 		curindex () {
@@ -100,7 +110,15 @@ export default {
 			}
 			return 0;
 		}
-	}
+	},
+	components: {
+    	'v-shopcart': shopcart
+  	},
+  	props: {
+  		seller: {
+  			type: Object
+  		}
+  	}
 };
 </script>
 
@@ -124,10 +142,13 @@ export default {
 				line-height: 14px
 				&.curr
 					position : relative
-					font-weight : 700
+					font-weight : 600
 					margin-top : -1px
 					z-index : 1
 					background:#fff
+					.text
+						font-weight : 600
+						color : red
 					.text:after
 						border none
 				.icon
@@ -155,7 +176,7 @@ export default {
 					width : 56px
 					border-1px(rgba(7, 17, 27, 0.1))
 					:last-child:after
-						border : none
+							border : none
 		.foods-warpper
 			flex: 1
 			.food-list

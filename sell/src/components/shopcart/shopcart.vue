@@ -1,0 +1,169 @@
+<template>
+ <div class="shopcart">
+  <div class="content">
+  	<div class="cartLeft" :class="{curr:allCount>0}">
+	  	<div class="icon-wrapper" >
+	  		<div v-if='allCount>0' class="count">
+	  			{{allCount}}
+	  		</div>
+	  		<div class="icon">
+	  			<span class='icon-shopping_cart'></span>
+	  		</div>
+	  	</div>
+	  	<div class="price">
+	  		￥{{allPrice}}
+	  	</div>
+	  	<div class="des">
+	  		另需配送费￥{{deliveryPrice}}元
+	  	</div>
+    </div>
+    <div class="cartRight">
+    	<p v-if='allPrice==0'>{{minPrice}}元起送</p>
+  		<p v-if='allPrice>=minPrice' class="go">去结算</p>
+  		<p v-else class='no-go'>还差￥{{minPrice-allPrice}}起送</p>
+    </div>
+  </div>
+ </div>
+</template>
+
+<script type="text/ecmascript-6">
+export default {
+	props: {
+		// 配送费
+		deliveryPrice: {
+			type: Number,
+			default: 0
+		},
+		// 最低消费
+		minPrice: {
+			type: Number,
+			default: 0
+		},
+		// 选择的商品
+		selectFoods: {
+			type: Array,
+			default () {
+				return [{
+					price: 20,
+					count: 3
+				}, {
+					price: 0,
+					count: 0
+				}];
+			}
+		}
+	},
+	computed: {
+		// 总价
+		allPrice: function () {
+			var priceAll = 0;
+			this.selectFoods.forEach(function (food) {
+				priceAll += food.price * food.count;
+			});
+			return priceAll;
+		},
+		// 商品数
+		allCount: function () {
+			var counts = 0;
+			this.selectFoods.forEach(function (food) {
+				counts += food.count;
+			});
+			return counts;
+		}
+	}
+};
+</script>
+
+<style lang="stylus" rel="stylesheet/stylus">
+	.shopcart
+		position: fixed
+		left : 0
+		z-index : 10
+		bottom : 0
+		width : 100%
+		height : 48px
+		background : rgba(0, 0, 0, 0.8)
+		.content
+			display : flex
+			background : #141d27
+			height : 100%
+			.cartLeft
+				background : #141d27
+				flex : 1
+				&.curr
+					background : #08121c
+					.price 
+						color : #fff
+					.icon-wrapper
+						background : #08121c
+						.icon
+							background : #00a0dc
+							.icon-shopping_cart
+								color : #fff
+				.icon-wrapper
+					display : inline-block
+					background : #141d27
+					margin 0px 12px
+					padding : 6px
+					border-radius : 50%
+					position : relative
+					top : -10px
+					width : 56px
+					height : 56px
+					box-sizing : border-box
+					float: left
+					.count
+						position : absolute
+						left : 35px
+						top : 0px
+						background : rgb(240, 20, 20)
+						color : #fff
+						padding : 3px 10px
+						border-radius : 10px
+						font-size : 12px
+						line-height : 12px
+						box-shadow : 0 4px 8px 0 rgba(0, 0, 0, 0.4)
+					.icon
+						width : 100%
+						height : 100%
+						text-align : center
+						background : #2b343c
+						border-radius : 50%
+						line-height: 44px
+						.icon-shopping_cart
+							color : #80858a
+							font-size: 24px
+							line-height : 44px
+							vertical-align: top
+				.price 
+					display : inline-block
+					font-size : 16px
+					font-weight : 600
+					line-height : 24px 
+					margin : 12px 12px 12px 0;
+					padding-right : 12px
+					color : rgba(255, 255, 255, 0.4)
+					border-right : 1px solid rgba(255,255,255,0.1)
+					float : left
+				.des
+					line-height : 24px 
+					font-size : 16px
+					margin-top: 12px
+					color : rgba( 255, 255, 255, 0.4)
+					font-weight : 600
+			.cartRight
+				p
+					flex : 0 0 105px
+					width : 105px
+					line-height : 48px
+					font-size : 16px
+					font-weight : 600
+					color : rgba( 255, 255, 255, 0.4)
+					text-align : center
+					background : rgba(0, 0, 0, .2)
+					&.no-go
+						background-color : #2b333b;
+					&.go
+						background-color : #00b43c;
+						color : #fff
+</style>

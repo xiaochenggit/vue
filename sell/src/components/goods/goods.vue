@@ -29,6 +29,9 @@
    	         	<span>￥{{food.price}}</span>
    	         	<span v-show='food.oldPrice' class="oldprice">￥{{food.oldPrice}}</span>
    	         </div>
+   	         <div class="cartControl">
+   	         	<v-cartcontrol :food='food'></v-cartcontrol>
+   	         </div>
    	       </div>
    	     </li>
    	   </ul>
@@ -42,6 +45,7 @@
 
 <script type="text/ecmascript-6">
 import shopcart from '../../components/shopcart/shopcart.vue';
+import cartcontrol from '../../components/cartcontrol/cartcontrol.vue';
 import BScroll from 'better-scroll';
 export default {
 	data () {
@@ -75,7 +79,8 @@ export default {
 			});
 			this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
 			   // 添加监听位置参数
-			   probeType: 3
+			   probeType: 3,
+			   click: true
 			});
 			// 添加位置监听参数之后才可以获得位置信息
 			var that = this;
@@ -94,7 +99,7 @@ export default {
 			}
 		},
 		// 左侧菜单@click= 'function' 参数位置index
-		 selectMenu: function (index) {
+		 selectMenu: function (index, event) {
 		 	var listItem = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
 		 	this.foodsScroll.scrollToElement(listItem[index], 300);
 		 }
@@ -112,7 +117,8 @@ export default {
 		}
 	},
 	components: {
-    	'v-shopcart': shopcart
+    	'v-shopcart': shopcart,
+    	'v-cartcontrol': cartcontrol
   	},
   	props: {
   		seller: {
@@ -230,4 +236,8 @@ export default {
 								margin-left: 8px
 								line-height : 10px
 								text-decoration : line-through
+						.cartControl
+							position : absolute
+							bottom : 9px;
+							right : -6px;
 </style>

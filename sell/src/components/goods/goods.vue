@@ -39,7 +39,7 @@
    </ul>
  </div>
  <!-- 把陪送费,起送费传递 -->
- <v-shopcart :deliveryPrice='seller.deliveryPrice' :minPrice='seller.minPrice'></v-shopcart>
+ <v-shopcart :deliveryPrice='seller.deliveryPrice' :minPrice='seller.minPrice' :selectFoods="selectFoods"></v-shopcart>
 </div>
 </template>
 
@@ -114,6 +114,18 @@ export default {
 				}
 			}
 			return 0;
+		},
+		// foods 数组传给购物车
+		selectFoods () {
+			var foods = [];
+			this.goods.forEach(function (good) {
+				good.foods.forEach(function (food) {
+					if (food.count) {
+						foods.push(food);
+					}
+				});
+			});
+			return foods;
 		}
 	},
 	components: {

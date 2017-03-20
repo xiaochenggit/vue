@@ -2,7 +2,7 @@
  <div class="shopcart">
   <div class="content">
   	<div class="cartLeft" :class="{curr:allCount>0}">
-	  	<div class="icon-wrapper" >
+	  	<div class="icon-wrapper" @click="changeFold()">
 	  		<div v-if='allCount>0' class="count">
 	  			{{allCount}}
 	  		</div>
@@ -23,10 +23,35 @@
   		<p v-else class='no-go'>还差￥{{minPrice-allPrice}}起送</p>
     </div>
   </div>
+  <transition name='shopcart-fade'>
+  <div class="shopcart-list" v-show='fold'>
+    	<div class="list-header">
+    		<h1 class="title">购物车</h1>
+    		<span class='empty' @click = "clearCart()">清空</span>
+    	</div>
+    	<div class="list-content">
+    		<ul class="foods-group">
+    			<li class="foods" v-for='food in selectFoods'>
+    				<span class='name'>{{food.name}}</span>
+    				<div class="price">
+    					<span>￥{{food.price*food.count}}</span>
+    				</div>
+    				<div class="cartcontrol-wrapper">
+    					<v-cartcontrol :food = "food"></v-cartcontrol>
+    				</div>
+    			</li>
+    		</ul>
+    	</div>
+    </div>
+    </transition>
+    <div class="mark" v-show="fold">
+    	
+    </div>
  </div>
 </template>
 
 <script type="text/ecmascript-6">
+import cartcontrol from '../../components/cartcontrol/cartcontrol.vue';
 export default {
 	props: {
 		// 配送费
@@ -43,14 +68,25 @@ export default {
 		selectFoods: {
 			type: Array,
 			default () {
-				return [{
-					price: 20,
-					count: 3
-				}, {
-					price: 0,
-					count: 0
-				}];
+				return [{}];
 			}
+		}
+	},
+	data () {
+		return {
+		  fold: false
+		};
+	},
+	methods: {
+		changeFold: function () {
+			if (this.allCount) {
+				this.fold = !this.fold;
+			}
+		},
+		clearCart: function () {
+			this.selectFoods.forEach(function (food) {
+				food.count = 0;
+			});
 		}
 	},
 	computed: {
@@ -68,9 +104,15 @@ export default {
 			this.selectFoods.forEach(function (food) {
 				counts += food.count;
 			});
+			if (!counts) {
+				this.fold = false;
+			}
 			return counts;
 		}
-	}
+	},
+	components: {
+	'v-cartcontrol': cartcontrol
+  	}
 };
 </script>
 
@@ -83,6 +125,14 @@ export default {
 		width : 100%
 		height : 48px
 		background : rgba(0, 0, 0, 0.8)
+		.mark
+			width : 100%
+			height : 100%
+			top : 0
+			left : 0
+			position : fixed
+			z-index : -2
+			background-color : rgba(0, 0, 0, .4)
 		.content
 			display : flex
 			background : #141d27
@@ -166,4 +216,50 @@ export default {
 					&.go
 						background-color : #00b43c;
 						color : #fff
+		.shopcart-list
+			position : absolute
+			background-color : #fff
+			z-index : -1
+			bottom : 48px
+			width : 100%
+			padding-bottom : 23px
+			.list-header
+				background-color: #f3f5f7
+				font-size : 14px
+				line-height : 40px 
+				overflow : hidden
+				padding : 0px 18px
+				border-bottom : 1px solid rgba(7, 17, 27, 0.1)
+				.title
+					float : left
+					color : rgb(7, 17, 27)
+				.empty
+					float : right
+					color : rgb(0, 160, 220)
+			.list-content
+				padding : 0px 18px
+				max-height : 196px
+				overflow-x: hidden
+				.foods
+					display : flex
+					padding : 5px 0px
+					line-height : 38px
+					border-bottom : 1px solid rgba(7, 17, 27, 0.1)
+					.cartcontrol-wrapper
+						float : right
+						min-width : 96px
+					.name 
+						flex : 1
+						color : rgb(7, 17, 27)
+					.price
+						font-size : 10px
+						color : rgb(240, 20, 20)
+						padding : 0px 12px 0px 16px
+.shopcart-fade-enter-active,
+.shopcart-fade-leave-active{
+  transition: all 0.4s ease;
+}
+.shopcart-fade-enter,.shopcart-fade-leave-active {
+  transform: translate3d(0,100%,0);
+}
 </style>

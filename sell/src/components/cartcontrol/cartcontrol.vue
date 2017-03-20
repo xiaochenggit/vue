@@ -1,8 +1,10 @@
 <template>
 	<div class="cartontrol">
+		<transition name='fade'>
 		<div class="decrease" v-if="food.count > 0" @click = "decreaseCount">
 			<i class="icon-remove_circle_outline"></i>
 		</div>
+		</transition>	
 		<div class="count" v-if="food.count > 0">
 			{{food.count}}
 		</div>
@@ -17,7 +19,7 @@ import Vue from 'vue';
 export default {
 	props: ['food'],
 	methods: {
-		addCount (event) {
+		addCount () {
 			if (!this.food.count) {
 				Vue.set(this.food, 'count', 1);
 			} else {
@@ -26,7 +28,9 @@ export default {
 			console.log(this.food.count);
 		},
 		decreaseCount () {
-			this.food.count --;
+			if (this.food.count) {
+			   this.food.count --;
+			}
 		}
 	}
 };
@@ -35,7 +39,8 @@ export default {
 <style lang="stylus" rel="stylesheet/stylus">
 	.cartontrol
 		div
-			display:inline-block
+			display:inline-block;
+			float: left;
 			font-size : 24px
 			line-height:  24px
 			padding : 6px
@@ -45,4 +50,27 @@ export default {
 		.count
 			font-size : 12px
 			line-height : 24px
+			width : 12px
+			text-align : center
+			padding-top : 6px 0 0 0;
+		.icon-remove_circle_outline
+			display : inline-block
+		.fade-enter-active, .fade-leave-active {
+			transition: all .8s linear;
+		}
+		.fade-enter, .fade-leave-active {
+			// transform: translateX(24px);
+			transform: translate3D(24px,0,0);
+  			opacity: 0
+		}
+.fade-enter-active .icon-remove_circle_outline,
+.fade-leave-active .icon-remove_circle_outline{
+	transition: all .8s linear;
+	transform : rotate(0deg);
+}
+		
+.fade-enter .icon-remove_circle_outline,
+.fade-leave-active .icon-remove_circle_outline{
+	transform : rotate(180deg)
+}
 </style>

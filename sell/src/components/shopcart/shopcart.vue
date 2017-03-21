@@ -44,7 +44,7 @@
     	</div>
     </div>
     </transition>
-    <div class="mark" v-show="fold">
+    <div class="mark" v-if="fold">
     	
     </div>
  </div>
@@ -126,13 +126,14 @@ export default {
 		height : 48px
 		background : rgba(0, 0, 0, 0.8)
 		.mark
+			filter : blur(10px)
 			width : 100%
 			height : 100%
 			top : 0
 			left : 0
 			position : fixed
 			z-index : -2
-			background-color : rgba(0, 0, 0, .4)
+			background: rgba(7, 17, 27, 0.6)
 		.content
 			display : flex
 			background : #141d27

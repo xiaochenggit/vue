@@ -1,14 +1,14 @@
 <template>
 	<div class="cartontrol">
 		<transition name='fade'>
-		<div class="decrease" v-if="food.count > 0" @click = "decreaseCount">
+		<div class="decrease" v-if="food.count > 0" @click.stop = "decreaseCount">
 			<i class="icon-remove_circle_outline"></i>
 		</div>
 		</transition>	
 		<div class="count" v-if="food.count > 0">
 			{{food.count}}
 		</div>
-		<div class="add" @click="addCount()">
+		<div class="add" @click.stop="addCount()">
 			<i class="icon-add_circle"></i>
 		</div>
 	</div>

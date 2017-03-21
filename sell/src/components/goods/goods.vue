@@ -14,7 +14,7 @@
    	 <li v-for="item in goods" class="food-list food-list-hook">
    	   <h2 class="title">{{item.name}}</h2>
    	   <ul>
-   	     <li v-for="food in item.foods" class="food-item">
+   	     <li v-for="food in item.foods" class="food-item" @click="selectFood(food)">
    	       <div class="icon">
    	         <img :src="food.icon" alt="food.name"> 	
    	       </div>
@@ -38,6 +38,7 @@
    	 </li>
    </ul>
  </div>
+ <v-food :food = 'selectFoodone' ref='fooded'></v-food>
  <!-- 把陪送费,起送费传递 -->
  <v-shopcart :deliveryPrice='seller.deliveryPrice' :minPrice='seller.minPrice' :selectFoods="selectFoods"></v-shopcart>
 </div>
@@ -46,6 +47,7 @@
 <script type="text/ecmascript-6">
 import shopcart from '../../components/shopcart/shopcart.vue';
 import cartcontrol from '../../components/cartcontrol/cartcontrol.vue';
+import food from '../../components/food/food.vue';
 import BScroll from 'better-scroll';
 export default {
 	data () {
@@ -55,7 +57,9 @@ export default {
 	     // list 的高度合集
 	     listHeight: [],
 	     // 跟踪变量 scrollY
-	     scrollY: 0
+	     scrollY: 0,
+	     // 选择food的地址
+	     selectFoodone: ''
 	   };
 	},
 	mounted () {
@@ -102,7 +106,13 @@ export default {
 		 selectMenu: function (index, event) {
 		 	var listItem = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook');
 		 	this.foodsScroll.scrollToElement(listItem[index], 300);
-		 }
+		 },
+		// 点选food
+		selectFood: function (food) {
+			this.selectFoodone = food;
+			// 显示food页面
+			this.$refs.fooded.changeShowFlag();
+		}
 	},
 	computed: {
 		curindex () {
@@ -130,7 +140,8 @@ export default {
 	},
 	components: {
     	'v-shopcart': shopcart,
-    	'v-cartcontrol': cartcontrol
+    	'v-cartcontrol': cartcontrol,
+    	'v-food': food
   	},
   	props: {
   		seller: {

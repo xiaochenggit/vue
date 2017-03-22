@@ -25,7 +25,6 @@ export default {
 			} else {
 				this.food.count += 1;
 			}
-			console.log(this.food.count);
 		},
 		decreaseCount () {
 			if (this.food.count) {

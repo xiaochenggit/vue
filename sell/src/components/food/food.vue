@@ -1,9 +1,10 @@
 <template>
 <transition name="slide-food">
-	<div class="food" v-show ='showFlag' >
+	<div class="food" v-if ='showFlag' ref='foodWrapper'  @click="changeShowFlag">
+		<div>
 		<div class="img-header">
 			<img :src="food.image" class="img">
-			<div class="back" @click="changeShowFlag">
+			<div class="back">
 				<span class='icon-arrow_lift'></span>
 			</div>
 		</div>
@@ -17,7 +18,7 @@
 				<span class='price'>￥{{food.price}}</span>
 				<span class='oldPrice' v-if='food.oldPrice'>￥{{food.oldPrice}}</span>
 				<div class="purchase">
-					<div class="button-group" v-show='!food.count' @click='addCart'>
+					<div class="button-group" v-show='!food.count' @click.stop='addCart'>
 						<span class='btn'>加入购物车</span>
 					</div>
 					<div class="controll" v-show='food.count'>
@@ -26,9 +27,9 @@
 				</div>
 			</div>
 		</div>
-		<div class="interval" v-if='food.info'>
+		<div class="interval" v-show='food.info'>
 		</div>
-		<div class="introduce" v-if='food.info'>
+		<div class="introduce" v-show='food.info'>
 			<div class="head">商品介绍</div>
 			<p class="info">{{food.info}}</p>
 		</div>
@@ -43,7 +44,7 @@
 			</div>
 		</div>
 		<div class="ratings">
-			<div class="filter" @click='ratingIsFilter = !ratingIsFilter'>
+			<div class="filter" @click.stop='changeRatingIsFilter()'>
 				<span class='icon-check_circle' :class='{yes:ratingIsFilter}'></span>只看有内容的评价
 			</div>
 			<div class="body">
@@ -65,12 +66,13 @@
 				</ul>
 			</div>
 		</div>
+		</div>
 	</div>
 </transition>
 </template>
-
 <script type="text/ecmascript-6">
 import cartcontrol from '@/components/cartcontrol/cartcontrol.vue';
+import BScroll from 'better-scroll';
 export default {
 	props: ['food'],
 	data () {
@@ -89,30 +91,15 @@ export default {
 			ratingIsFilter: false
 		};
 	},
-	computed: {
-		// 过滤后的数据
-		filterRatings: function () {
-			if (!this.ratingIsFilter) {
-				return this.ratings;
-			} else {
-				var arr = [];
-				this.ratings.forEach(function (rating) {
-					if (rating.text) {
-						arr.push(rating);
-					}
-				});
-				return arr;
-			}
-		}
-	},
 	methods: {
 		changeShowFlag: function () {
 			this.showFlag = !this.showFlag;
 			if (this.showFlag) {
+				this.ratingIsFilter = false;
 				var _this = this;
 				this.$nextTick(function () {
+					_this.ratings = _this.food.ratings;
 					_this.showRatings();
-					_this.ratings = this.food.ratings;
 				});
 			}
 		},
@@ -131,7 +118,38 @@ export default {
 					_this.evaGood += 1;
 				}
 			});
+			this.$nextTick(function () {
+				if (!_this.foodScroll) {
+					_this.foodScroll = new BScroll(_this.$refs.foodWrapper, {
+						click: true
+					});
+				} else {
+					_this.foodScroll = '';
+					_this.foodScroll = new BScroll(_this.$refs.foodWrapper, {
+						click: true
+					});
+				}
+			});
 			return;
+		},
+		changeRatingIsFilter: function () {
+			this.ratingIsFilter = !this.ratingIsFilter;
+		}
+	},
+	computed: {
+		// 过滤后的数据
+		filterRatings: function () {
+			if (!this.ratingIsFilter) {
+				return this.ratings;
+			} else {
+				var arr = [];
+				this.ratings.forEach(function (rating) {
+					if (rating.text) {
+						arr.push(rating);
+					}
+				});
+				return arr;
+			}
 		}
 	},
 	filters: {
@@ -166,7 +184,6 @@ export default {
 		z-index: 1
 		width : 100%
 		background : #fff
-		overflow-x: hidden;
 		.ratings
 			.filter
 				padding : 12px 18px
@@ -254,9 +271,15 @@ export default {
 					color : rgb(77, 85, 93)
 		.img-header
 			position : relative
+			width : 100%;
+			height : 0px
+			padding-top:100%
 			.img
+				top : 0px
+				left : 0px
+				position : absolute
 				width : 100%
-				height : auto
+				height : 100%
 			.back
 				position : absolute
 				left : 0px

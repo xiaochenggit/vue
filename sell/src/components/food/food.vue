@@ -1,10 +1,10 @@
 <template>
 <transition name="slide-food">
-	<div class="food" v-if ='showFlag' ref='foodWrapper'  @click="changeShowFlag">
+	<div class="food" v-if ='showFlag' ref='foodWrapper'>
 		<div>
 		<div class="img-header">
 			<img :src="food.image" class="img">
-			<div class="back">
+			<div class="back" @click="changeShowFlag">
 				<span class='icon-arrow_lift'></span>
 			</div>
 		</div>
@@ -38,9 +38,9 @@
 		<div class="evaluate">
 			<div class="head">商品介绍</div>
 			<div class="eva-group">
-				<div class="all">全部<span>{{this.evaAll}}</span></div>
-				<div class="good">推荐<span>{{this.evaGood}}</span></div>
-				<div class="bad">吐槽<span>{{this.evaBad}}</span></div>
+				<div class="all" @click='getRatings($event)' :class='{active:RatingType=="all"}'>全部<span>{{this.evaAll}}</span></div>
+				<div class="good" @click='getRatings($event)' :class='{active:RatingType=="good"}'>推荐<span>{{this.evaGood}}</span></div>
+				<div class="bad" @click='getRatings($event)' :class='{active:RatingType=="bad"}'>吐槽<span>{{this.evaBad}}</span></div>
 			</div>
 		</div>
 		<div class="ratings">
@@ -48,10 +48,10 @@
 				<span class='icon-check_circle' :class='{yes:ratingIsFilter}'></span>只看有内容的评价
 			</div>
 			<div class="body">
-				<ul>
+				<ul v-if='filterRatings.length > 0'>
 					<li v-for='rating in filterRatings' class="rating">
 						<div class="head">
-							<div class="left">{{rating.rateTime|reTime}}</div>
+							<div class="left">{{rating.rateTime|formatDate}}</div>
 							<div class="right">
 								<div class="name">{{rating.username}}</div>
 								<div class="img">
@@ -64,6 +64,7 @@
 						</div>
 					</li>
 				</ul>
+				<h4 v-else> 暂无内容</h4>
 			</div>
 		</div>
 		</div>
@@ -72,6 +73,7 @@
 </template>
 <script type="text/ecmascript-6">
 import cartcontrol from '@/components/cartcontrol/cartcontrol.vue';
+import {formateDate} from '@/common/js/date';
 import BScroll from 'better-scroll';
 export default {
 	props: ['food'],
@@ -88,7 +90,9 @@ export default {
 			// 评论数据
 			ratings: [],
 			// 是否过滤数据
-			ratingIsFilter: false
+			ratingIsFilter: false,
+			// all good bad
+			RatingType: 'all'
 		};
 	},
 	methods: {
@@ -134,18 +138,60 @@ export default {
 		},
 		changeRatingIsFilter: function () {
 			this.ratingIsFilter = !this.ratingIsFilter;
+		},
+		// 显示条目
+		getRatings: function (event) {
+			var target = event.target;
+			var className = target.getAttribute('class');
+			if (!className) {
+				className = target.parentNode.getAttribute('class');
+			}
+			this.RatingType = className.split(' ')[0];
 		}
 	},
 	computed: {
 		// 过滤后的数据
 		filterRatings: function () {
 			if (!this.ratingIsFilter) {
-				return this.ratings;
+				if (this.RatingType !== 'all') {
+					if (this.RatingType == 'good') {
+						var arr2 = [];
+						this.ratings.forEach(function (rating) {
+							if (rating.rateType == 0) {
+								arr2.push(rating);
+							}
+						});
+						return arr2;
+					} else {
+						var arr1 = [];
+						this.ratings.forEach(function (rating) {
+							if (rating.rateType == 1) {
+								arr1.push(rating);
+							}
+						});
+						return arr1;
+					}
+				} else {
+					return this.ratings;
+				}
 			} else {
 				var arr = [];
+				var _this = this;
 				this.ratings.forEach(function (rating) {
 					if (rating.text) {
-						arr.push(rating);
+						if (_this.RatingType !== 'all') {
+							if (_this.RatingType == 'good') {
+								if (rating.rateType == 0) {
+									arr.push(rating);
+								}
+							} else {
+								if (rating.rateType == 1) {
+									arr.push(rating);
+								}
+							}
+						} else {
+							arr.push(rating);
+						}
 					}
 				});
 				return arr;
@@ -167,6 +213,10 @@ export default {
 			var hours = reNum(time.getHours());
 			var minutes = reNum(time.getMinutes());
 			return year + '-' + month + '-' + date + '  ' + hours + ' : ' + minutes;
+		},
+		formatDate (time) {
+			let date = new Date(time);
+			return formateDate(date, 'yyyy-MM-dd hh:mm');
 		}
 	},
 	components: {
@@ -260,15 +310,22 @@ export default {
 					float: left
 					border-radius : 4px
 					margin-right : 8px
+					color : rgb(77, 85, 93)
 				.all
-					background-color : rgb(0, 160, 220)
-					color : rgb(255, 255, 255)
+					background-color : rgba(0, 160, 220,0.2)
+					&.active
+						color : rgb(255, 255, 255)
+						background-color : rgb(0, 160, 220)
 				.good
 					background-color : rgba(0, 160, 220,0.2)
-					color : rgb(77, 85, 93)
+					&.active
+						color : rgb(255, 255, 255)
+						background-color : rgb(0, 160, 220)
 				.bad
 					background-color : rgba(77, 85, 93,0.2)
-					color : rgb(77, 85, 93)
+					&.active
+						color : rgb(255, 255, 255)
+						background-color : rgb(77, 85, 93)
 		.img-header
 			position : relative
 			width : 100%;

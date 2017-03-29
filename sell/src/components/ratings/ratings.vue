@@ -1,6 +1,7 @@
 <template>
 	<div class="ratings-t">
-		<div class="rating-warp">
+		<div ref="ratings">
+		<div class="rating-warp" >
 			<div class="rating-head">
 				<div class="rating-head-left">
 					<h2 class="score">{{seller.score}}</h2>
@@ -30,7 +31,7 @@
 			</div>
 			<div class="interval">
 			</div>
-			<div class="ratingfilter-warp">
+			<div class="ratingfilter-warp" @click='sx'>
 				<v-ratingfilter ref='ratingfilter'></v-ratingfilter>
 			</div>
 			<div class="ratingUsers" v-if='ratings'>
@@ -52,10 +53,21 @@
 								<div class="des">
 									 {{rating.text}}
 								</div>
+								<div class="cont">
+									<div class="isGood">
+										<span :class="{'icon-thumb_up':rating.rateType==0,'icon-thumb_down':rating.rateType==1,active:rating.rateType==0}"></span>
+									</div>
+									<ul v-if='rating.recommend' class='food-item'>
+										<li v-for='food in rating.recommend' >
+											{{food}}
+										</li>
+									</ul>
+								</div>
 							</div>
 						</div>
 					</li>
 				</ul>
+			</div>
 			</div>
 		</div>
 	</div>
@@ -64,6 +76,8 @@
 import star from '../star/star';
 import ratingfilter from '../ratingfilter/ratingfilter';
 import {formateDate} from '@/common/js/date';
+import BScroll from 'better-scroll';
+import shopcart from '../../components/shopcart/shopcart.vue';
 export default {
 	props: ['seller'],
 	data () {
@@ -73,7 +87,8 @@ export default {
 	},
 	components: {
 		'v-star': star,
-		'v-ratingfilter': ratingfilter
+		'v-ratingfilter': ratingfilter,
+		'v-shopcart': shopcart
 	},
 	mounted () {
 		this.$nextTick(function () {
@@ -82,14 +97,22 @@ export default {
 				if (res.body.erron == 0) {
 					_this.ratings = res.body.data;
 				}
+				if (!_this.menuratings) {
+						_this.menuratings = new BScroll(_this.$refs.ratings, {
+						click: true
+					});
+				} else {
+					_this.menuratings = '';
+					_this.menuratings = new BScroll(_this.$refs.ratings, {
+						click: true
+					});
+				}
 			});
 		});
 	},
-	computed: {
-		getratings: function () {
-			this.$nextTick(function () {
-				return this.$refs.ratingfilter.reMessage;
-			});
+	methods: {
+		sx: function () {
+			this.ratings = this.$refs.ratingfilter.reMessage;
 		}
 	},
 	filters: {
@@ -102,11 +125,12 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-	.ratings-t
-		position: absolute
+	.rating-warp
+		position: fixed
 		top : 175px
 		bottom : 40px 
 		width : 100%
+		z-index: -4
 		.rating-head
 			display : flex
 			padding : 18px 0px
@@ -189,4 +213,34 @@ export default {
 								font-size : 12px
 								line-height : 12px
 								margin-left : 6px
+						.des
+							font-size : 12px
+							line-height : 18px
+							color : rgb(7, 17, 27)
+						.cont
+							display : flex
+							margin-top : 8px
+							.isGood
+								flex : 0 
+								span
+									color : rgb(183, 187, 191)
+									&.active
+										color : rgb(0, 160, 220)
+							.food-item
+								flex : 1 
+								li
+									display : inline-block
+									font-size : 12px
+									color : rgb(147, 153, 159)
+									line-height : 16px
+									border : 1px solid rgba(7, 17, 27, 0.1)
+									border-radius : 2px
+									padding : 0 6px
+									margin-left : 8px
+									margin-bottom : 6px
+									width : 68px
+									overflow : hidden 
+									white-space: nowrap
+									text-overflow: ellipsis
+									text-align : center
 </style>

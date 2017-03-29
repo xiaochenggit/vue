@@ -11,10 +11,8 @@ const CLS_OFF = 'off';
 	export default {
 		props: {
 			size: {
-				type: Number
 			},
 			score: {
-				type: Number
 			}
 		},
 		computed: {

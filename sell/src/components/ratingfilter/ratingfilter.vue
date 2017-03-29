@@ -5,7 +5,7 @@
 			<div class="good" @click='getRatings($event)' :class='{active:RatingType==0}'>推荐<span>{{this.evaGood}}</span></div>
 			<div class="bad" @click='getRatings($event)' :class='{active:RatingType==1}'>吐槽<span>{{this.evaBad}}</span></div>
 		</div>
-		<div class="filter" @click.stop='changeRatingIsFilter()'>
+		<div class="filter" @click='changeRatingIsFilter()'>
 			<span class='icon-check_circle' :class='{yes:ratingIsFilter}'></span>只看有内容的评价
 		</div>
 	</div>
@@ -93,7 +93,7 @@ export default {
 					}
 				}
 			});
-			return arr1.length;
+			return arr1;
 		}
 	}
 };

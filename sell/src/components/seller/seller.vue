@@ -62,6 +62,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+import {saveToLocal, loadFromLocal} from '@/common/js/store';
 import BScroll from 'better-scroll';
 import star from '../star/star';
 export default {
@@ -71,7 +72,7 @@ export default {
 	},
 	data () {
 		return {
-			favorite: true
+			favorite: false
 		};
 	},
 	computed: {
@@ -117,12 +118,15 @@ export default {
 				return;
 			}
 			this.favorite = !this.favorite;
+			// 存储数据到 localStorage
+			saveToLocal(this.seller.id, 'favorite', this.favorite);
 		}
 	},
 	watch: {
 		seller: function () {
 			 this._initScroll();
 			 this._pisScroll();
+			 this.favorite = loadFromLocal(this.seller.id, 'favorite', false);
 		}
 	},
 	mounted: function () {

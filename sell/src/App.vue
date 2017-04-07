@@ -27,17 +27,23 @@
 //   name: 'app'
 // };
 // 引用组件
+// import {urlParse} from '@/common/js/date';
 import header from './components/header/header.vue';
 const ERR_OR = 0;
 export default {
   data () {
     return {
-      seller: {}
+      seller: {
+        // id: (() => {
+        //   let queryParam = urlParse();
+        //   return queryParam.id;
+        // })()
+      }
     };
   },
   mounted () {
     this.$nextTick(function () {
-      this.$http.get('/api/seller').then(function (response) {
+      this.$http.get('/api/seller?id=' + this.seller.id).then(function (response) {
         if (response.body.errno == ERR_OR) {
           this.seller = response.body.data;
         }

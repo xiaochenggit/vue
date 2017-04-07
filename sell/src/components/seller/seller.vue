@@ -132,6 +132,7 @@ export default {
 	mounted: function () {
 	    this._initScroll();
 	    this._pisScroll();
+	    this.favorite = loadFromLocal(this.seller.id, 'favorite', false);
 	}
 };
 </script>

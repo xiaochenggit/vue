@@ -1,6 +1,5 @@
 <template>
-	<div class="ratings-t">
-		<div ref="ratings">
+	<div class="ratings-t" ref="ratings">
 		<div class="rating-warp" >
 			<div class="rating-head">
 				<div class="rating-head-left">
@@ -68,7 +67,6 @@
 					</li>
 				</ul>
 			</div>
-			</div>
 		</div>
 	</div>
 </template>
@@ -96,16 +94,7 @@ export default {
 			this.$http.get('/api/ratings').then(function (res) {
 				if (res.body.erron == 0) {
 					_this.ratings = res.body.data;
-				}
-				if (!_this.menuratings) {
-						_this.menuratings = new BScroll(_this.$refs.ratings, {
-						click: true
-					});
-				} else {
-					_this.menuratings = '';
-					_this.menuratings = new BScroll(_this.$refs.ratings, {
-						click: true
-					});
+					_this.sx();
 				}
 			});
 		});
@@ -113,6 +102,22 @@ export default {
 	methods: {
 		sx: function () {
 			this.ratings = this.$refs.ratingfilter.reMessage;
+		},
+		_menuratings: function () {
+			this.$nextTick(function () {
+				if (!this.menuratings) {
+					this.menuratings = new BScroll(this.$refs.ratings, {
+						click: true
+					});
+				} else {
+					this.menuratings.refresh();
+				}
+			});
+		}
+	},
+	watch: {
+		ratings: function () {
+			this._menuratings();
 		}
 	},
 	filters: {
@@ -125,12 +130,13 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-	.rating-warp
+	.ratings-t
 		position: fixed
 		top : 175px
 		bottom : 40px 
 		width : 100%
 		z-index: -4
+		overflow:hidden
 		.rating-head
 			display : flex
 			padding : 18px 0px
